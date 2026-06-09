@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人简历 - 作品集</title>
+
+    <!-- ========== Tailwind CSS CDN ========== -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- ========== Google Fonts: Inter + Playfair Display ========== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- ========== Tailwind 自定义配置 ========== -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'serif': ['Playfair Display', 'Georgia', 'serif'],
+                    },
+                    colors: {
+                        'brand': {
+                            50: '#f8f7f4',
+                            100: '#f0ede6',
+                            200: '#e2dbcd',
+                            300: '#d1c5ad',
+                            400: '#bfa98a',
+                            500: '#b09470',
+                            600: '#a38064',
+                            700: '#886a54',
+                            800: '#705749',
+                            900: '#5e493e',
+                            950: '#322620',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- ========== 自定义样式 ========== -->
+    <style>
+        html { scroll-behavior: smooth; }
+
+        /* 滚动渐入动画 */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero 向下箭头弹跳动画 */
+        @keyframes bounce-down {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(8px); }
+        }
+        .animate-bounce-down {
+            animation: bounce-down 2s ease-in-out infinite;
+        }
+
+        /* 技能进度条动画 */
+        .skill-bar {
+            transition: width 1.2s ease-out;
+        }
+
+        /* 画廊图片悬停效果 */
+        .gallery-item {
+            overflow: hidden;
+        }
+        .gallery-item img {
+            transition: transform 0.5s ease;
+        }
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        /* 时间轴线 */
+        .timeline-line {
+            position: absolute;
+            left: 11px;
+            top: 28px;
+            bottom: 0;
+            width: 2px;
+        }
+
+        /* 项目卡片悬停 */
+        .project-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .project-card:hover {
+            transform: translateY(-4px);
+        }
+
+        /* Tab 按钮样式 */
+        .tab-btn.active {
+            border-bottom-width: 2px;
+        }
+    </style>
+</head>
+<body class="bg-brand-50 text-brand-950 font-sans antialiased">
+
+<!--
+╔══════════════════════════════════════════════════════════╗
+║              内 容 配 置 区 （CONFIG）                    ║
+║  修改以下对象中的内容即可更新整个网站，无需改布局或样式    ║
+╚══════════════════════════════════════════════════════════╝
+-->
+<script>
+const CONFIG = {
+
+    /* ========== 个人信息 ========== */
+    personal: {
+        name: '白昌灏',
+        nameEn: 'Bai Changhao',
+        title: '求职者',
+        slogan: '以商业思维分析，用AI技术串联业务与技术，尝试跨界从商科走向互联网的AI初学者',
+        heroPhoto: 'https://tu.imgur.la/2026/06/03/retouch_2026053014453536.jpg',
+        heroPhotoAlt: '个人形象照片',
+    },
+
+    /* ========== 关于我 ========== */
+    about: {
+        photo: 'https://tu.imgur.la/2026/06/03/_20260603230915_404_166a3b619b7f49f78cb.jpg',
+        photoAlt: '关于我照片',
+        intro: '你好！我是白昌灏，一名热爱创意与技术的AI初学者。专注于将自己的想法借助人工智能技术转化为落地的产品。',
+        details: [
+            '本硕东北财经大学，本科金融、辅修会计双学位；硕士数字经济专业。曾于内资会计师事务所和网易总部游戏研究组实习，有一定市场洞察和商业分析能力。',
+            '自主深耕AIGC落地，入门Python和SQL，vibe coding经验丰富，经常使用Coze、Claude完成AI工作流搭建与产品原型设计。',
+            '业余时间热爱运动、摄影/视频创作，了解热点新闻，培养网感。'
+        ],
+        strengths: ['AI创作', '市场洞察', '自学AIGC/Vibe coding', '健身羽毛球'],
+    },
+
+    /* ========== 作品集/媒体区 ========== */
+    portfolio: {
+        /* 照片作品 */
+        photos: [
+            { url: 'https://tu.imgur.la/2026/06/03/retouch_2026052914051679_1.jpg', caption: '颐和园' },
+            { url: 'https://tu.imgur.la/2026/06/08/retouch_2026053014453536.jpg', caption: '长城' },
+            { url: 'https://tu.imgur.la/2026/06/04/IMG_20260529_222349_1.jpg', caption: '画中游' },
+            { url: 'https://tu.imgur.la/2026/06/04/_20260604225352_406_166.jpg', caption: '奖学金' },
+            { url: 'https://tu.imgur.la/2026/06/07/_20260607144042_417_166.jpg', caption: '东财雨天' },
+            { url: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=600&h=400&fit=crop', caption: '森林光影' },
+        ],
+        /* 视频作品 */
+        videos: [
+            {
+                url: '//player.bilibili.com/player.html?isOutside=true&aid=116692650822270&bvid=BV125EA6NEAt&cid=38860492648&p=1',
+                poster: 'https://tu.imgur.la/2026/06/05/65-1.png',
+                title: '给母校的告别信-东财 四季',
+            },
+            {
+                url: '//player.bilibili.com/player.html?isOutside=true&aid=116692684377698&bvid=BV1y7EA6AEED&cid=38861865260&p=1',
+                poster: 'https://tu.imgur.la/2026/06/05/e6d57cb441b2892a3b7b71572db47eb2.png',
+                title: '潜龙（漫剧）',
+            },
+        ],
+        /* 项目作品（coze工作流/智能体/小程序/小游戏） */
+        projects: [
+            {
+                name: '邵氏AI短剧工作流',
+                desc: '按需求输入提示词，可制作邵氏AI短剧',
+                screenshot: 'https://tu.imgur.la/2026/06/07/_20260607170906_432_166.jpg',
+                url: 'https://www.coze.cn/work_flow?workflow_id=7644590844439199763&space_id=7623716424309358633',
+                tag: 'Coze工作流',
+            },
+            {
+                name: '每日灵感',
+                desc: '每日推送精选艺术灵感图片与文案，用户可刷新、收藏与分享，清新治愈。',
+                screenshot: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600&h=350&fit=crop',
+                url: 'daily-inspiration.html',
+                tag: 'H5应用',
+            },
+            {
+                name: '记忆翻牌小游戏',
+                desc: '原生开发的记忆翻牌配对游戏，支持简单/中等/困难三种难度，计时计步，翻牌动画流畅，清新可爱风格。',
+                screenshot: 'https://images.unsplash.com/photo-1611606063065-ee7946f0787a?w=600&h=350&fit=crop',
+                url: 'memory-game.html',
+                tag: '小游戏',
+            },
+            {
+                name: '自研agent skill',
+                desc: '自研自用的一些 AI skill，适配于多个agent',
+                screenshot: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=350&fit=crop',
+                url: 'https://github.com/Bai921476/my-skill-web',
+                tag: 'AI skill',
+            },
+        ],
+    },
+
+    /* ========== 工作/实习经历 ========== */
+    experiences: [
+        {
+            period: '2023.07 - 2023.09',
+            company: '容诚会计师事务所（北京总所）',
+            role: '审计实习生',
+            desc: '参与多家企业年度审计项目，负责底稿编制、财务数据分析与合规性核查，夯实财务分析与商业逻辑基础。',
+        },
+        {
+            period: '2026.01 - 2026.04',
+            company: '网易总部（广州总部二期）',
+            role: '游戏研究实习生',
+            desc: '深入参与游戏行业市场研究，独立完成竞品分析与用户画像报告，运用AI工具提升数据处理效率，为产品决策提供数据支撑。',
+        },
+        {
+            period: '2026.01 - 至今',
+            company: '东北财经大学 · 数字经济硕士',
+            role: '独立项目 / AI 产品探索',
+            desc: '自主深耕AIGC落地应用，日常使用Claude code/Codex处理各类工作任务，使用Coze搭建AI智能体/工作流；入门Python与SQL，具备Vibe Coding经验；有制作AI视频经验。',
+        },
+    ],
+
+    /* ========== 专业技能 ========== */
+    skills: [
+        { name: 'AIGC工具链', level: 60 },
+        { name: '商业分析 / 市场洞察', level: 60 },
+        { name: 'Python / SQL', level: 60 },
+        { name: 'Vibe Coding / AI产品原型', level: 60 },
+        { name: '视频创作 / 摄影', level: 60 },
+        { name: '财务分析 / 会计', level: 60 },
+    ],
+
+    /* ========== 联系方式 ========== */
+    contact: {
+        email: '2316979323@qq.com',
+        social: [
+            { name: 'GitHub', url: 'https://github.com', icon: 'github' },
+            { name: '微信', url: '#', icon: 'wechat' },
+            { name: '微博', url: '#', icon: 'weibo' },
+            { name: 'LinkedIn', url: '#', icon: 'linkedin' },
+        ],
+        ctaText: '发送邮件联系我',
+    },
+
+    /* ========== 页脚 ========== */
+    footer: {
+        copyright: '© 2026 白昌灏. All Rights Reserved.',
+    }
+};
+</script>
+
+<!--
+╔══════════════════════════════════════════════════════════╗
+║                  HTML 页 面 结 构                        ║
+╚══════════════════════════════════════════════════════════╝
+-->
+
+<!-- ==================== 导航栏 ==================== -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-brand-50/80 backdrop-blur-md border-b border-brand-200/50">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="#hero" class="text-xl font-serif font-semibold text-brand-900 tracking-wide" id="nav-logo"></a>
+        <div class="hidden md:flex items-center gap-8 text-sm font-medium text-brand-700">
+            <a href="#about" class="hover:text-brand-950 transition-colors">关于我</a>
+            <a href="#portfolio" class="hover:text-brand-950 transition-colors">作品集</a>
+            <a href="#experience" class="hover:text-brand-950 transition-colors">技能&经历</a>
+            <a href="#contact" class="hover:text-brand-950 transition-colors">联系方式</a>
+        </div>
+        <!-- 移动端菜单按钮 -->
+        <button id="mobile-menu-btn" class="md:hidden text-brand-700 hover:text-brand-950 transition-colors" aria-label="菜单">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
+    </div>
+    <!-- 移动端下拉菜单 -->
+    <div id="mobile-menu" class="hidden md:hidden bg-brand-50/95 backdrop-blur-md border-b border-brand-200/50 px-6 pb-4">
+        <a href="#about" class="block py-2 text-sm font-medium text-brand-700 hover:text-brand-950">关于我</a>
+        <a href="#portfolio" class="block py-2 text-sm font-medium text-brand-700 hover:text-brand-950">作品集</a>
+        <a href="#experience" class="block py-2 text-sm font-medium text-brand-700 hover:text-brand-950">技能&经历</a>
+        <a href="#contact" class="block py-2 text-sm font-medium text-brand-700 hover:text-brand-950">联系方式</a>
+    </div>
+</nav>
+
+<!-- ==================== 1. Hero 区 ==================== -->
+<section id="hero" class="min-h-screen flex items-center justify-center px-6 pt-20">
+    <div class="max-w-6xl mx-auto w-full grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+        <!-- 左侧文字 -->
+        <div class="order-2 md:order-1 text-center md:text-left fade-in">
+            <p class="text-3xl uppercase tracking-widest text-brand-500 mb-4 font-medium" id="hero-title"></p>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-brand-950 leading-tight mb-6" id="hero-name"></h1>
+            <p class="text-lg md:text-xl text-brand-600 leading-relaxed font-light" id="hero-slogan"></p>
+            <div class="mt-8 flex gap-4 justify-center md:justify-start">
+                <a href="#portfolio" class="px-6 py-3 bg-brand-900 text-white text-sm font-medium rounded-full hover:bg-brand-800 transition-colors shadow-lg shadow-brand-900/20">
+                    查看作品
+                </a>
+                <a href="#contact" class="px-6 py-3 border border-brand-400 text-brand-700 text-sm font-medium rounded-full hover:bg-brand-100 transition-colors">
+                    联系我
+                </a>
+            </div>
+        </div>
+        <!-- 右侧照片 -->
+        <div class="order-1 md:order-2 flex justify-center fade-in">
+            <div class="relative">
+                <div class="w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-2xl overflow-hidden shadow-2xl shadow-brand-900/20" id="hero-photo-container">
+                    <img id="hero-photo" src="" alt="" class="w-full h-full object-cover">
+                </div>
+                <!-- 装饰元素 -->
+                <div class="absolute -z-10 top-0 w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-2xl bg-brand-200/50 -translate-x-4 translate-y-4"></div>
+            </div>
+        </div>
+    </div>
+    <!-- 向下滚动提示 -->
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce-down">
+        <span class="text-xs text-brand-400 tracking-widest uppercase">Scroll</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+        </svg>
+    </div>
+</section>
+
+<!-- ==================== 2. 关于我 ==================== -->
+<section id="about" class="py-24 md:py-32 px-6 bg-white">
+    <div class="max-w-6xl mx-auto">
+        <!-- 模块标题 -->
+        <div class="text-center mb-16 fade-in">
+            <p class="text-sm uppercase tracking-widest text-brand-400 mb-3 font-medium">About</p>
+            <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-950">关于我</h2>
+        </div>
+
+        <div class="grid md:grid-cols-5 gap-12 md:gap-16 items-center">
+            <!-- 左侧照片 -->
+            <div class="md:col-span-2 flex justify-center fade-in">
+                <div class="w-48 h-48 md:w-64 md:h-64 rounded-2xl overflow-hidden shadow-lg" id="about-photo-container">
+                    <img id="about-photo" src="" alt="" class="w-full h-full object-cover">
+                </div>
+            </div>
+            <!-- 右侧文字 -->
+            <div class="md:col-span-3 fade-in">
+                <p class="text-brand-600 leading-relaxed mb-4 text-lg font-light" id="about-intro"></p>
+                <div class="space-y-2 mb-6 text-brand-600 leading-relaxed" id="about-details"></div>
+                <!-- 核心优势标签 -->
+                <div class="flex flex-wrap gap-2" id="about-strengths"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 3. 作品集/媒体区 ==================== -->
+<section id="portfolio" class="py-24 md:py-32 px-6 bg-brand-50">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16 fade-in">
+            <p class="text-sm uppercase tracking-widest text-brand-400 mb-3 font-medium">Portfolio</p>
+            <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-950">作品集</h2>
+        </div>
+
+        <!-- Tab 切换按钮 -->
+        <div class="flex justify-center gap-8 md:gap-12 mb-12 fade-in">
+            <button class="tab-btn active pb-2 text-sm md:text-base font-medium text-brand-900 border-brand-900 transition-colors" data-tab="photos">
+                摄影作品
+            </button>
+            <button class="tab-btn pb-2 text-sm md:text-base font-medium text-brand-400 border-transparent hover:text-brand-600 transition-colors" data-tab="videos">
+                视频作品
+            </button>
+            <button class="tab-btn pb-2 text-sm md:text-base font-medium text-brand-400 border-transparent hover:text-brand-600 transition-colors" data-tab="projects">
+                项目作品
+            </button>
+        </div>
+
+        <!-- Tab 内容: 照片 -->
+        <div id="tab-photos" class="tab-content grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+            <!-- JS动态渲染 -->
+        </div>
+
+        <!-- Tab 内容: 视频 -->
+        <div id="tab-videos" class="tab-content hidden grid md:grid-cols-2 gap-8">
+            <!-- JS动态渲染 -->
+        </div>
+
+        <!-- Tab 内容: 项目作品 -->
+        <div id="tab-projects" class="tab-content hidden grid md:grid-cols-2 gap-6">
+            <!-- JS动态渲染 -->
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 4. 技能&经历 ==================== -->
+<section id="experience" class="py-24 md:py-32 px-6 bg-white">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16 fade-in">
+            <p class="text-sm uppercase tracking-widest text-brand-400 mb-3 font-medium">Experience</p>
+            <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-950">技能 & 经历</h2>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-16">
+            <!-- 左侧: 工作经历时间轴 -->
+            <div class="fade-in">
+                <h3 class="text-xl font-serif font-semibold text-brand-900 mb-8">工作经历</h3>
+                <div class="relative" id="experience-timeline">
+                    <!-- JS动态渲染 -->
+                </div>
+            </div>
+
+            <!-- 右侧: 专业技能 -->
+            <div class="fade-in">
+                <h3 class="text-xl font-serif font-semibold text-brand-900 mb-8">专业技能</h3>
+                <div class="space-y-5" id="skills-container">
+                    <!-- JS动态渲染 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 5. 联系方式 ==================== -->
+<section id="contact" class="py-24 md:py-32 px-6 bg-brand-900 text-white">
+    <div class="max-w-3xl mx-auto text-center">
+        <div class="fade-in">
+            <p class="text-sm uppercase tracking-widest text-brand-300 mb-3 font-medium">Contact</p>
+            <h2 class="text-3xl md:text-4xl font-serif font-bold mb-8">保持联系</h2>
+            <p class="text-brand-200 text-lg mb-8 font-light">如果你对我的作品或技能感兴趣，<br class="hidden md:block">欢迎随时联系我，一起交流合作。</p>
+
+            <!-- 邮箱 -->
+            <a id="contact-email" href="" class="inline-block text-2xl md:text-3xl font-serif text-brand-100 hover:text-white transition-colors mb-10 border-b border-brand-500 pb-2"></a>
+
+            <!-- 社交图标 -->
+            <div class="flex justify-center gap-6 mb-10" id="social-links">
+                <!-- JS动态渲染 -->
+            </div>
+
+            <!-- CTA 按钮 -->
+            <a id="contact-cta" href="" class="inline-block px-8 py-3 bg-white text-brand-900 text-sm font-medium rounded-full hover:bg-brand-50 transition-colors shadow-lg"></a>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 6. 页脚 ==================== -->
+<footer class="py-8 px-6 bg-brand-950 text-brand-400">
+    <div class="max-w-6xl mx-auto text-center text-sm" id="footer-text"></div>
+</footer>
+
+
+<!--
+╔══════════════════════════════════════════════════════════╗
+║              JavaScript 渲 染 & 交 互                   ║
+╚══════════════════════════════════════════════════════════╝
+-->
+<script>
+(function() {
+    'use strict';
+
+    const C = CONFIG;
+
+    /* ========== 1. 渲染导航栏 Logo ========== */
+    document.getElementById('nav-logo').textContent = C.personal.name;
+
+    /* ========== 2. 渲染 Hero 区 ========== */
+    document.getElementById('hero-title').textContent = C.personal.title;
+    document.getElementById('hero-name').innerHTML = C.personal.name + '<br>' + C.personal.nameEn;
+    document.getElementById('hero-slogan').innerHTML = C.personal.slogan;
+    document.getElementById('hero-photo').src = C.personal.heroPhoto;
+    document.getElementById('hero-photo').alt = C.personal.heroPhotoAlt;
+
+    /* ========== 3. 渲染关于我 ========== */
+    document.getElementById('about-photo').src = C.about.photo;
+    document.getElementById('about-photo').alt = C.about.photoAlt;
+    document.getElementById('about-intro').textContent = C.about.intro;
+
+    // 详细描述
+    const detailsDiv = document.getElementById('about-details');
+    C.about.details.forEach(d => {
+        const p = document.createElement('p');
+        p.textContent = d;
+        detailsDiv.appendChild(p);
+    });
+
+    // 核心优势标签
+    const strengthsDiv = document.getElementById('about-strengths');
+    C.about.strengths.forEach(s => {
+        const span = document.createElement('span');
+        span.className = 'px-4 py-1.5 bg-brand-100 text-brand-700 text-sm rounded-full font-medium';
+        span.textContent = s;
+        strengthsDiv.appendChild(span);
+    });
+
+    /* ========== 4. 渲染作品集 ========== */
+    // 照片
+    const photosTab = document.getElementById('tab-photos');
+    C.portfolio.photos.forEach(photo => {
+        const div = document.createElement('div');
+        div.className = 'gallery-item rounded-xl overflow-hidden shadow-md bg-white';
+        div.innerHTML = `
+            <div class="aspect-[3/2] overflow-hidden">
+                <img src="${photo.url}" alt="${photo.caption}" class="w-full h-full object-cover" loading="lazy">
+            </div>
+            <p class="p-3 text-sm text-brand-600 text-center">${photo.caption}</p>
+        `;
+        photosTab.appendChild(div);
+    });
+
+    // 视频 — B站iframe嵌入（补全协议相对URL）
+    const videosTab = document.getElementById('tab-videos');
+    C.portfolio.videos.forEach(video => {
+        const src = video.url.startsWith('//') ? 'https:' + video.url : video.url;
+        const div = document.createElement('div');
+        div.className = 'rounded-xl overflow-hidden shadow-md bg-white';
+        div.innerHTML = `
+            <div class="aspect-video">
+                <iframe src="${src}" scrolling="no" border="0" frameborder="0"
+                        allowfullscreen="true"
+                        class="w-full h-full">
+                </iframe>
+            </div>
+            <p class="p-4 text-sm text-brand-600 text-center font-medium">${video.title}</p>
+        `;
+        videosTab.appendChild(div);
+    });
+
+    // 项目作品卡片
+    const projectsTab = document.getElementById('tab-projects');
+    C.portfolio.projects.forEach(proj => {
+        const div = document.createElement('div');
+        div.className = 'project-card bg-white rounded-xl overflow-hidden shadow-md border border-brand-100';
+        div.innerHTML = `
+            <div class="aspect-video overflow-hidden">
+                <img src="${proj.screenshot}" alt="${proj.name}" class="w-full h-full object-cover" loading="lazy">
+            </div>
+            <div class="p-5">
+                <span class="inline-block px-2.5 py-0.5 bg-brand-100 text-brand-600 text-xs font-medium rounded-full mb-2">${proj.tag}</span>
+                <h4 class="text-lg font-semibold text-brand-900 mb-2">${proj.name}</h4>
+                <p class="text-sm text-brand-500 leading-relaxed mb-4">${proj.desc}</p>
+                <a href="${proj.url}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:text-brand-900 transition-colors">
+                    查看项目
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                </a>
+            </div>
+        `;
+        projectsTab.appendChild(div);
+    });
+
+    // Tab 切换逻辑
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetTab = btn.dataset.tab;
+            // 更新按钮状态
+            tabBtns.forEach(b => {
+                b.classList.remove('active', 'text-brand-900', 'border-brand-900');
+                b.classList.add('text-brand-400', 'border-transparent');
+            });
+            btn.classList.add('active', 'text-brand-900', 'border-brand-900');
+            btn.classList.remove('text-brand-400', 'border-transparent');
+            // 切换内容
+            tabContents.forEach(tc => tc.classList.add('hidden'));
+            document.getElementById('tab-' + targetTab).classList.remove('hidden');
+        });
+    });
+
+    /* ========== 5. 渲染技能&经历 ========== */
+    // 工作经历时间轴
+    const timeline = document.getElementById('experience-timeline');
+    C.experiences.forEach((exp, i) => {
+        const div = document.createElement('div');
+        div.className = 'relative pl-10 pb-10 last:pb-0';
+        div.innerHTML = `
+            <div class="timeline-line bg-brand-200"></div>
+            <div class="absolute left-0 top-0 w-6 h-6 rounded-full border-2 border-brand-400 bg-white flex items-center justify-center">
+                <div class="w-2 h-2 rounded-full bg-brand-500"></div>
+            </div>
+            <span class="text-xs font-medium text-brand-400 uppercase tracking-wider">${exp.period}</span>
+            <h4 class="text-lg font-semibold text-brand-900 mt-1">${exp.role}</h4>
+            <p class="text-sm text-brand-500 mt-0.5">${exp.company}</p>
+            <p class="text-sm text-brand-600 mt-2 leading-relaxed">${exp.desc}</p>
+        `;
+        timeline.appendChild(div);
+    });
+
+    // 专业技能
+    const skillsContainer = document.getElementById('skills-container');
+    C.skills.forEach(skill => {
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <div class="flex justify-between items-center mb-1.5">
+                <span class="text-sm font-medium text-brand-700">${skill.name}</span>
+                <span class="text-xs text-brand-400">${skill.level}%</span>
+            </div>
+            <div class="w-full h-2 bg-brand-100 rounded-full overflow-hidden">
+                <div class="h-full bg-brand-500 rounded-full skill-bar" style="width: 0%" data-width="${skill.level}%"></div>
+            </div>
+        `;
+        skillsContainer.appendChild(div);
+    });
+
+    /* ========== 6. 渲染联系方式 ========== */
+    const contactEmail = document.getElementById('contact-email');
+    contactEmail.href = 'mailto:' + C.contact.email;
+    contactEmail.textContent = C.contact.email;
+
+    // 社交图标 SVG 映射
+    const iconSVGs = {
+        github: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>',
+        wechat: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 0 1-.023-.156.49.49 0 0 1 .201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.952-7.062-6.122zm-2.18 2.769c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982z"/></svg>',
+        weibo: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443zm-4.516-3.934c.855.125 1.625-.2 1.717-.727.095-.527-.515-1.055-1.371-1.179-.856-.126-1.621.2-1.716.727-.092.524.517 1.054 1.37 1.179zm3.959-2.005c.373.235.529.691.349 1.018-.178.328-.633.424-1.009.189-.375-.235-.528-.689-.349-1.018.18-.329.633-.424 1.009-.189zm4.257-2.451c-.267.82-1.328 1.402-2.367 1.3-1.038-.1-1.662-.858-1.394-1.679.268-.819 1.334-1.399 2.373-1.298 1.039.101 1.66.859 1.388 1.677zm1.232-1.809c-1.098-.409-2.309-.148-3.003.571-.149.155-.207.34-.144.407.062.067.273.043.504-.064.617-.287 1.391-.42 1.97-.287.151.035.281-.015.313-.134.045-.158-.034-.339-.19-.422.285.307.46.728.368 1.171-.13.631-.569 1.17-1.06 1.53zm6.254-2.008c-.687-1.805-2.083-3.189-3.721-4.021-1.326-.673-2.851-.881-4.271-.64.66-.487 1.484-.74 2.313-.722 1.851.039 3.593 1.108 4.443 2.66.834 1.524.717 3.368-.333 4.661.292-.452.465-1.022.441-1.6-.039-.942-.452-1.703-1.125-2.069.67.419 1.268 1.06 1.523 1.812.266.788.155 1.621-.224 2.287.223-.498.294-1.087.154-1.646-.084-.338-.238-.649-.424-.919.43.484.644 1.192.504 1.873-.076.366-.233.695-.452.965.536-.921.668-2.131.239-3.241z"/></svg>',
+        linkedin: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>',
+    };
+
+    const socialDiv = document.getElementById('social-links');
+    C.contact.social.forEach(s => {
+        const a = document.createElement('a');
+        a.href = s.url;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.className = 'text-brand-300 hover:text-white transition-colors';
+        a.title = s.name;
+        a.innerHTML = iconSVGs[s.icon] || '';
+        socialDiv.appendChild(a);
+    });
+
+    const ctaBtn = document.getElementById('contact-cta');
+    ctaBtn.href = 'mailto:' + C.contact.email;
+    ctaBtn.textContent = C.contact.ctaText;
+
+    /* ========== 7. 渲染页脚 ========== */
+    document.getElementById('footer-text').textContent = C.footer.copyright;
+
+    /* ========== 8. 移动端菜单切换 ========== */
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+    // 点击菜单项后关闭
+    mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+        });
+    });
+
+    /* ========== 9. Intersection Observer 滚动渐入动画 ========== */
+    const fadeEls = document.querySelectorAll('.fade-in');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+    fadeEls.forEach(el => observer.observe(el));
+
+    /* ========== 10. 技能进度条进入视口后动画 ========== */
+    const skillObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const bars = entry.target.querySelectorAll('.skill-bar');
+                bars.forEach(bar => {
+                    bar.style.width = bar.dataset.width;
+                });
+                skillObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+
+    const skillsContainerEl = document.getElementById('skills-container');
+    if (skillsContainerEl) skillObserver.observe(skillsContainerEl);
+
+})();
+</script>
+
+<!--
+╔══════════════════════════════════════════════════════════╗
+║          简 易 使 用 & 更 新 教 程                       ║
+║                                                        ║
+║ 【如何替换内容】                                        ║
+║ 1. 打开 index.html，找到 <script> 标签中的 CONFIG 对象  ║
+║ 2. 修改对应的字段即可，无需改动 HTML/CSS/JS 代码：       ║
+║                                                        ║
+║   - personal.name / nameEn / title / slogan            ║
+║     → 替换姓名、职位、标语文字                          ║
+║   - personal.heroPhoto                                 ║
+║     → 替换 Hero 区个人照片URL                           ║
+║   - about.intro / details[] / strengths[]              ║
+║     → 替换关于我介绍、详细描述、优势标签                 ║
+║   - about.photo                                        ║
+║     → 替换关于我区域的个人照片URL                        ║
+║   - portfolio.photos[]                                 ║
+║     → 替换摄影作品（url=图片地址, caption=标题）         ║
+║   - portfolio.videos[]                                 ║
+║     → 替换视频作品（url=视频地址, poster=封面图,        ║
+║        title=标题）                                     ║
+║   - portfolio.projects[]                               ║
+║     → 替换项目作品（name/desc/screenshot/url/tag）      ║
+║   - experiences[]                                      ║
+║     → 替换工作经历（period/company/role/desc）          ║
+║   - skills[]                                           ║
+║     → 替换技能（name=技能名, level=掌握程度0-100）      ║
+║   - contact.email / social[] / ctaText                 ║
+║     → 替换联系方式和社交链接                            ║
+║   - footer.copyright                                   ║
+║     → 替换页脚版权文字                                  ║
+║                                                        ║
+║ 【如何添加/删除作品或经历】                              ║
+║ - 在对应的数组中增加或删除对象即可                       ║
+║ - 例如：在 portfolio.photos 数组中添加                  ║
+║   { url: '新图片地址', caption: '新图片标题' }          ║
+║                                                        ║
+║ 【如何更换照片和视频】                                   ║
+║ - 照片：将图片上传到图床（如 imgur/sm.ms/阿里云OSS），  ║
+║   复制URL替换对应字段                                   ║
+║ - 视频：同样上传后复制URL，建议同时设置 poster 封面图    ║
+║                                                        ║
+║ 【如何新增/删除整个板块】                                ║
+║ - 新增板块：参考现有 section 结构，复制一份修改id和内容  ║
+║ - 删除板块：删除对应 <section> 和 CONFIG 中的配置即可   ║
+║                                                        ║
+║ 【如何部署】                                            ║
+║ 1. 本地使用：直接用浏览器打开 index.html 即可            ║
+║ 2. 静态托管：上传到以下任一平台即可                      ║
+║    - GitHub Pages（免费）                               ║
+║    - Vercel（免费）                                     ║
+║    - Netlify（免费）                                    ║
+║    - Cloudflare Pages（免费）                           ║
+║    - 任何静态服务器/Nginx/Apache                        ║
+║ 3. 部署步骤（以GitHub Pages为例）：                      ║
+║    a. 创建GitHub仓库                                    ║
+║    b. 上传 index.html 到仓库                            ║
+║    c. Settings → Pages → Source 选择 main 分支          ║
+║    d. 保存后等待部署完成，访问提示的URL即可              ║
+║                                                        ║
+║ 【注意事项】                                            ║
+║ - 图片URL建议使用HTTPS链接                              ║
+║ - 照片建议尺寸：Hero照片 600x600px以上                   ║
+║ - 视频格式建议：MP4（兼容性最好）                        ║
+║ - 如使用Unsplash图片，URL末尾参数可控制裁剪和尺寸        ║
+╚══════════════════════════════════════════════════════════╝
+-->
+
+</body>
+</html>

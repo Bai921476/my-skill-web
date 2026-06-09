@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日灵感</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f8f7f4 0%, #e2dbcd 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .app-wrapper {
+            background: #fff;
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 20px 60px rgba(50,38,32,0.12);
+            max-width: 480px;
+            width: 100%;
+        }
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .app-header h1 {
+            font-family: 'Playfair Display', 'Noto Serif SC', serif;
+            font-size: 22px;
+            color: #322620;
+        }
+        .app-header .date {
+            font-size: 12px;
+            color: #b09470;
+            letter-spacing: 1px;
+        }
+        .card-stack {
+            position: relative;
+            margin-bottom: 24px;
+        }
+        .inspiration-card {
+            background: #f8f7f4;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #e2dbcd;
+            transition: all 0.4s ease;
+        }
+        .card-image-wrap {
+            position: relative;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+            background: #e2dbcd;
+        }
+        .card-image-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .card-image-wrap:hover img { transform: scale(1.03); }
+        .card-image-wrap .refresh-hint {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(50,38,32,0.55);
+            color: #fff;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .card-image-wrap:hover .refresh-hint { opacity: 1; }
+        .card-body {
+            padding: 20px;
+        }
+        .card-body .quote {
+            font-family: 'Playfair Display', 'Noto Serif SC', serif;
+            font-size: 20px;
+            color: #322620;
+            line-height: 1.5;
+            margin-bottom: 6px;
+        }
+        .card-body .author {
+            font-size: 12px;
+            color: #b09470;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .card-body .tags {
+            display: flex;
+            gap: 6px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .card-body .tag {
+            font-size: 11px;
+            padding: 4px 10px;
+            background: #f0ede6;
+            color: #886a54;
+            border-radius: 10px;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background: #322620;
+            color: #fff;
+        }
+        .btn-primary:hover { background: #5e493e; }
+        .btn-outline {
+            background: #fff;
+            color: #705749;
+            border: 1.5px solid #d1c5ad !important;
+        }
+        .btn-outline:hover { background: #f8f7f4; }
+        .btn-share {
+            background: #fff;
+            color: #705749;
+            border: 1.5px solid #d1c5ad !important;
+        }
+        .btn-share:hover { background: #f8f7f4; }
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2dbcd;
+        }
+        .collection-item {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .collection-item:hover { border-color: #b09470; transform: scale(1.05); }
+        .collection-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .section-label {
+            font-size: 12px;
+            color: #b09470;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .empty-collection {
+            text-align: center;
+            padding: 16px;
+            color: #bfa98a;
+            font-size: 13px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #322620;
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 24px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 100;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #a38064;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .back-link:hover { color: #5e493e; }
+
+        @media (max-width: 500px) {
+            .app-wrapper { padding: 20px 14px; }
+            .card-body .quote { font-size: 17px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+    <div class="app-header">
+        <h1>✨ 每日灵感</h1>
+        <span class="date" id="dateDisplay"></span>
+    </div>
+
+    <div class="card-stack">
+        <div class="inspiration-card">
+            <div class="card-image-wrap" id="cardImageWrap">
+                <img id="cardImage" src="" alt="">
+                <span class="refresh-hint">点击图片换一张</span>
+            </div>
+            <div class="card-body">
+                <p class="quote" id="cardQuote"></p>
+                <p class="author" id="cardAuthor"></p>
+                <div class="tags" id="cardTags"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="btn-outline" onclick="refreshCard()">🔄 换一个</button>
+        <button class="btn-primary" onclick="saveCard()">💾 收藏</button>
+        <button class="btn-share" onclick="shareCard()">📤 分享</button>
+    </div>
+
+    <div class="section-label" style="margin-top:20px;">我的收藏</div>
+    <div class="collection-grid" id="collectionGrid"></div>
+    <div class="empty-collection" id="emptyMsg" style="display:none;">还没有收藏，快去发现灵感吧 ✨</div>
+
+    <a href="index.html" class="back-link">← 返回作品集</a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const INSPIRATIONS = [
+    { img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=450&fit=crop', quote: '群山从不呼唤，但攀登者总会抵达。', author: '自然哲思', tags: ['山', '坚持', '旅行'] },
+    { img: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=600&h=450&fit=crop', quote: '秋天的每一片落叶，都是春天许下的诺言。', author: '四季物语', tags: ['秋', '自然', '哲理'] },
+    { img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=450&fit=crop', quote: '阳光穿过森林的缝隙，正如希望穿过困境。', author: '光与影', tags: ['森林', '希望', '治愈'] },
+    { img: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=600&h=450&fit=crop', quote: '花开不是为了凋谢，而是为了曾经绽放。', author: '花语集', tags: ['花', '生命', '绽放'] },
+    { img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&h=450&fit=crop', quote: '海浪退去时留下贝壳，正如时光流逝留下回忆。', author: '海岸线', tags: ['海', '时光', '回忆'] },
+    { img: 'https://images.unsplash.com/photo-1518173946687-a1e4e3e6a4e9?w=600&h=450&fit=crop', quote: '夜空中的星光走了几亿年，只为被你的眼睛捕捉。', author: '星空漫游', tags: ['星空', '宇宙', '浪漫'] },
+    { img: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=600&h=450&fit=crop', quote: '有时候停下来，才能看见森林深处隐藏的光。', author: '沉思录', tags: ['森林', '冥想', '光影'] },
+    { img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&h=450&fit=crop', quote: '山巅的风景，属于那些不曾回头的人。', author: '登山者', tags: ['山', '勇气', '信念'] },
+];
+
+let currentIndex = 0;
+let collections = JSON.parse(localStorage.getItem('daily_inspiration_collection') || '[]');
+
+function formatDate() {
+    const d = new Date();
+    const week = ['日','一','二','三','四','五','六'];
+    return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} 周${week[d.getDay()]}`;
+}
+
+function shuffleIndex() {
+    let next;
+    do { next = Math.floor(Math.random() * INSPIRATIONS.length); }
+    while (next === currentIndex && INSPIRATIONS.length > 1);
+    currentIndex = next;
+    return INSPIRATIONS[currentIndex];
+}
+
+function renderCard(item) {
+    document.getElementById('cardImage').src = item.img;
+    document.getElementById('cardQuote').textContent = '「' + item.quote + '」';
+    document.getElementById('cardAuthor').textContent = '—— ' + item.author;
+    const tagsEl = document.getElementById('cardTags');
+    tagsEl.innerHTML = item.tags.map(t => `<span class="tag">#${t}</span>`).join('');
+}
+
+function refreshCard() {
+    renderCard(shuffleIndex());
+    showToast('已刷新 ✨');
+}
+
+function saveCard() {
+    const item = INSPIRATIONS[currentIndex];
+    const exists = collections.find(c => c.img === item.img);
+    if (exists) { showToast('已经收藏过了哦～'); return; }
+    collections.unshift(item);
+    if (collections.length > 12) collections = collections.slice(0, 12);
+    localStorage.setItem('daily_inspiration_collection', JSON.stringify(collections));
+    renderCollection();
+    showToast('已收藏 💾');
+}
+
+function shareCard() {
+    const item = INSPIRATIONS[currentIndex];
+    if (navigator.share) {
+        navigator.share({ title: '每日灵感', text: `「${item.quote}」—— ${item.author}` });
+    } else {
+        navigator.clipboard.writeText(`「${item.quote}」—— ${item.author}`).then(() => {
+            showToast('文案已复制，去分享吧 📋');
+        }).catch(() => showToast('分享功能需要 HTTPS 环境'));
+    }
+}
+
+function renderCollection() {
+    const grid = document.getElementById('collectionGrid');
+    const empty = document.getElementById('emptyMsg');
+    grid.innerHTML = '';
+    if (collections.length === 0) {
+        empty.style.display = 'block';
+    } else {
+        empty.style.display = 'none';
+        collections.forEach((item, i) => {
+            const div = document.createElement('div');
+            div.className = 'collection-item';
+            div.innerHTML = `<img src="${item.img}" alt="" loading="lazy">`;
+            div.title = item.quote;
+            div.addEventListener('click', () => {
+                currentIndex = INSPIRATIONS.findIndex(ins => ins.img === item.img);
+                if (currentIndex >= 0) renderCard(INSPIRATIONS[currentIndex]);
+            });
+            // 长按删除
+            div.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                collections.splice(i, 1);
+                localStorage.setItem('daily_inspiration_collection', JSON.stringify(collections));
+                renderCollection();
+                showToast('已移除');
+            });
+            grid.appendChild(div);
+        });
+    }
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._tid);
+    t._tid = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// 点击封面图随机换
+document.getElementById('cardImageWrap').addEventListener('click', refreshCard);
+
+// 初始加载
+document.getElementById('dateDisplay').textContent = formatDate();
+renderCard(INSPIRATIONS[currentIndex]);
+renderCollection();
+</script>
+</body>
+</html>
